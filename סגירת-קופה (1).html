@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>סגירת קופה | ווטרגול</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean: #0077b6;
+    --sky: #00b4d8;
+    --foam: #90e0ef;
+    --sand: #f4e4c1;
+    --deep: #03045e;
+    --dark: #0d1b2a;
+    --card: #ffffff;
+    --border: #e2eaf0;
+    --text: #1a2b3c;
+    --muted: #7a92a8;
+    --success: #06d6a0;
+    --danger: #ef476f;
+    --warn: #ffd166;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(0,119,182,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: linear-gradient(160deg, #e0f4ff 0%, #f0f8ff 40%, #f4e4c1 100%);
+    min-height: 100vh;
+    color: var(--text);
+    padding-bottom: 60px;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--deep) 0%, var(--ocean) 100%);
+    color: white;
+    padding: 28px 24px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0; right: 0;
+    height: 32px;
+    background: linear-gradient(160deg, #e0f4ff 0%, #f0f8ff 100%);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .header-wave {
+    font-size: 36px;
+    margin-bottom: 6px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .header h1 {
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+  }
+  .header p {
+    font-size: 14px;
+    opacity: 0.75;
+    margin-top: 4px;
+  }
+
+  /* PROGRESS */
+  .progress-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 24px 0;
+    flex-wrap: wrap;
+  }
+  .step-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+  .step-dot.active { background: var(--ocean); transform: scale(1.4); }
+  .step-dot.done { background: var(--success); }
+
+  /* FORM */
+  .form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  .section-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    margin-bottom: 16px;
+    border: 1.5px solid var(--border);
+    animation: slideIn 0.4s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--deep);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+  }
+  .section-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--sky), var(--ocean));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* FIELDS */
+  .field {
+    margin-bottom: 16px;
+  }
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%;
+    padding: 13px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: #f8fbff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    direction: rtl;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none;
+    border-color: var(--sky);
+    box-shadow: 0 0 0 4px rgba(0,180,216,0.12);
+    background: white;
+  }
+  .field input[type="number"] { font-size: 20px; font-weight: 700; text-align: center; }
+  .field .hint { font-size: 12px; color: var(--muted); margin-top: 5px; }
+
+  /* BILLS GRID */
+  .bills-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .bill-item {
+    background: linear-gradient(135deg, #f0f8ff, #e8f4ff);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 12px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .bill-item:focus-within {
+    border-color: var(--sky);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(0,180,216,0.10);
+  }
+  .bill-label {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--ocean);
+    margin-bottom: 4px;
+  }
+  .bill-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  .bill-item input {
+    background: transparent !important;
+    border: 1.5px solid var(--border) !important;
+    font-size: 22px !important;
+    font-weight: 900 !important;
+    padding: 8px !important;
+  }
+
+  /* COINS GRID */
+  .coins-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .coin-item {
+    background: linear-gradient(135deg, #fffbf0, #fff8e0);
+    border: 2px solid #f0e0b0;
+    border-radius: 14px;
+    padding: 12px 8px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .coin-item:focus-within {
+    border-color: var(--warn);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(255,209,102,0.20);
+  }
+  .coin-label {
+    font-size: 18px;
+    font-weight: 900;
+    color: #b8860b;
+    margin-bottom: 3px;
+  }
+  .coin-item input {
+    background: transparent !important;
+    border: 1.5px solid #e0c870 !important;
+    font-size: 18px !important;
+    font-weight: 800 !important;
+    padding: 6px !important;
+  }
+
+  /* CALCULATED TOTAL */
+  .calc-total {
+    background: linear-gradient(135deg, var(--deep), var(--ocean));
+    color: white;
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+    margin-top: 16px;
+  }
+  .calc-total-label { font-size: 13px; opacity: 0.8; margin-bottom: 4px; }
+  .calc-total-amount { font-size: 36px; font-weight: 900; }
+
+  /* STATUS BOX */
+  .status-box {
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+    margin-top: 14px;
+    font-weight: 700;
+    font-size: 16px;
+    transition: all 0.3s;
+  }
+  .status-ok { background: rgba(6,214,160,0.12); color: #047857; border: 2px solid #06d6a0; }
+  .status-diff { background: rgba(239,71,111,0.10); color: #c0134f; border: 2px solid #ef476f; }
+  .status-pending { background: #f0f8ff; color: var(--muted); border: 2px solid var(--border); }
+
+  /* TOGGLE */
+  .toggle-group {
+    display: flex;
+    gap: 10px;
+  }
+  .toggle-btn {
+    flex: 1;
+    padding: 13px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    background: #f8fbff;
+    font-family: 'Heebo', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--muted);
+  }
+  .toggle-btn.active-yes { border-color: var(--success); background: rgba(6,214,160,0.1); color: #047857; }
+  .toggle-btn.active-no { border-color: var(--danger); background: rgba(239,71,111,0.08); color: #c0134f; }
+
+  /* ENVELOPE DETAILS */
+  .envelope-details {
+    margin-top: 14px;
+    padding: 16px;
+    background: #f4fbff;
+    border-radius: 14px;
+    border: 1.5px dashed var(--sky);
+    display: none;
+  }
+  .envelope-details.show { display: block; animation: slideIn 0.3s ease; }
+
+  .radio-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .radio-btn {
+    padding: 9px 16px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: white;
+    font-family: 'Heebo', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+  }
+  .radio-btn.selected { border-color: var(--ocean); background: rgba(0,119,182,0.08); color: var(--ocean); }
+
+  /* SUBMIT */
+  .submit-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, var(--ocean), var(--deep));
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: 'Heebo', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 8px 24px rgba(0,119,182,0.30);
+    letter-spacing: 0.3px;
+  }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,119,182,0.40); }
+  .submit-btn:active { transform: translateY(0); }
+
+  /* SUCCESS SCREEN */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 48px 24px;
+    animation: slideIn 0.5s ease;
+  }
+  .success-screen.show { display: block; }
+  .success-icon { font-size: 72px; margin-bottom: 16px; }
+  .success-screen h2 { font-size: 28px; font-weight: 900; color: var(--deep); }
+  .success-screen p { color: var(--muted); margin-top: 8px; font-size: 15px; }
+  .summary-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 24px;
+    margin: 24px auto;
+    max-width: 400px;
+    box-shadow: var(--shadow);
+    text-align: right;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-row span:first-child { color: var(--muted); }
+  .summary-row span:last-child { font-weight: 700; }
+  .new-form-btn {
+    background: linear-gradient(135deg, var(--sky), var(--ocean));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 32px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+
+  /* DIVIDER */
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  @media (max-width: 400px) {
+    .bills-grid { grid-template-columns: 1fr 1fr; }
+    .coins-grid { grid-template-columns: repeat(3, 1fr); }
+    .row-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-wave">🏖️</div>
+  <h1>סגירת קופה יומית</h1>
+  <p>ווטרגול — פעילות חופים</p>
+</div>
+
+<div class="progress-bar" id="progressBar">
+  <div class="step-dot active" id="dot0"></div>
+  <div class="step-dot" id="dot1"></div>
+  <div class="step-dot" id="dot2"></div>
+  <div class="step-dot" id="dot3"></div>
+  <div class="step-dot" id="dot4"></div>
+</div>
+
+<div class="form-container">
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✅</div>
+    <h2>הטופס נשלח בהצלחה!</h2>
+    <p>הנתונים נשמרו ויועברו למנהל</p>
+    <div class="summary-card" id="summaryCard"></div>
+    <button class="new-form-btn" onclick="resetForm()">📋 טופס חדש</button>
+  </div>
+
+  <div id="mainForm">
+
+    <!-- חלק א: פרטים -->
+    <div class="section-card" id="section0">
+      <div class="section-title">
+        <div class="section-icon">📋</div>
+        פרטים כלליים
+      </div>
+      <div class="row-2">
+        <div class="field">
+          <label>תאריך</label>
+          <input type="date" id="date" />
+        </div>
+        <div class="field">
+          <label>סניף</label>
+          <select id="branch">
+            <option value="">בחר סניף...</option>
+            <option>גורדון - תל אביב</option>
+            <option>הילטון - תל אביב</option>
+            <option>בת גלים - חיפה</option>
+            <option>אחר</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>שם העובד</label>
+        <input type="text" id="workerName" placeholder="שם פרטי ושם משפחה" />
+      </div>
+    </div>
+
+    <!-- חלק ב: שטרות -->
+    <div class="section-card" id="section1">
+      <div class="section-title">
+        <div class="section-icon">💵</div>
+        ספירת שטרות
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;background:#f0f8ff;padding:10px 14px;border-radius:10px;">
+        ⚠️ <strong>רשום כמה שטרות</strong> יש לך, <u>לא</u> את הסכום
+      </p>
+      <div class="bills-grid">
+        <div class="bill-item">
+          <div class="bill-label">₪200</div>
+          <div class="bill-sub">כמה שטרות?</div>
+          <input type="number" id="b200" min="0" value="0" oninput="calcTotal()" />
+        </div>
+        <div class="bill-item">
+          <div class="bill-label">₪100</div>
+          <div class="bill-sub">כמה שטרות?</div>
+          <input type="number" id="b100" min="0" value="0" oninput="calcTotal()" />
+        </div>
+        <div class="bill-item">
+          <div class="bill-label">₪50</div>
+          <div class="bill-sub">כמה שטרות?</div>
+          <input type="number" id="b50" min="0" value="0" oninput="calcTotal()" />
+        </div>
+        <div class="bill-item">
+          <div class="bill-label">₪20</div>
+          <div class="bill-sub">כמה שטרות?</div>
+          <input type="number" id="b20" min="0" value="0" oninput="calcTotal()" />
+        </div>
+      </div>
+    </div>
+
+    <!-- חלק ג: מטבעות -->
+    <div class="section-card" id="section2">
+      <div class="section-title">
+        <div class="section-icon">🪙</div>
+        ספירת מטבעות
+      </div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px;background:#fffbf0;padding:10px 14px;border-radius:10px;">
+        ⚠️ <strong>רשום כמה מטבעות</strong> יש לך, <u>לא</u> את הסכום
+      </p>
+      <div class="coins-grid">
+        <div class="coin-item">
+          <div class="coin-label">₪10</div>
+          <input type="number" id="c10" min="0" value="0" oninput="calcTotal()" />
+        </div>
+        <div class="coin-item">
+          <div class="coin-label">₪5</div>
+          <input type="number" id="c5" min="0" value="0" oninput="calcTotal()" />
+        </div>
+        <div class="coin-item">
+          <div class="coin-label">₪2</div>
+          <input type="number" id="c2" min="0" value="0" oninput="calcTotal()" />
+        </div>
+        <div class="coin-item">
+          <div class="coin-label">₪1</div>
+          <input type="number" id="c1" min="0" value="0" oninput="calcTotal()" />
+        </div>
+        <div class="coin-item">
+          <div class="coin-label">50 אג׳</div>
+          <input type="number" id="c05" min="0" value="0" oninput="calcTotal()" />
+        </div>
+        <div class="coin-item">
+          <div class="coin-label">10 אג׳</div>
+          <input type="number" id="c01" min="0" value="0" oninput="calcTotal()" />
+        </div>
+      </div>
+
+      <div class="calc-total">
+        <div class="calc-total-label">סה״כ מחושב אוטומטית</div>
+        <div class="calc-total-amount" id="calcAmount">₪0.00</div>
+      </div>
+
+      <div class="field" style="margin-top:16px;">
+        <label>סה״כ שספרת בקופה (₪)</label>
+        <input type="number" id="workerTotal" placeholder="הזן את הסכום שספרת" oninput="checkDiff()" step="0.01" />
+        <div class="hint">זה מה שספרת בידיים — הזן במדויק</div>
+      </div>
+
+      <div class="status-box status-pending" id="diffStatus">
+        הזן את הסכום שספרת לבדיקה
+      </div>
+    </div>
+
+    <!-- חלק ד: מעטפה -->
+    <div class="section-card" id="section3">
+      <div class="section-title">
+        <div class="section-icon">✉️</div>
+        מעטפה
+      </div>
+      <div class="field">
+        <label>האם הופקדה מעטפה היום?</label>
+        <div class="toggle-group">
+          <button class="toggle-btn" id="envYes" onclick="setEnvelope(true)">✅ כן, הופקדה</button>
+          <button class="toggle-btn" id="envNo" onclick="setEnvelope(false)">❌ לא הופקדה</button>
+        </div>
+      </div>
+
+      <div class="envelope-details" id="envelopeDetails">
+        <div class="field">
+          <label>סכום המעטפה (₪)</label>
+          <input type="number" id="envAmount" placeholder="0.00" step="0.01" />
+        </div>
+        <div class="field">
+          <label>סוג</label>
+          <div class="radio-group" id="envType">
+            <button class="radio-btn" onclick="selectRadio('envType',this,'מזומן')">💵 מזומן</button>
+            <button class="radio-btn" onclick="selectRadio('envType',this,'שיקים')">📄 שיקים</button>
+            <button class="radio-btn" onclick="selectRadio('envType',this,'משולב')">🔀 משולב</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>איפה נמצאת המעטפה?</label>
+          <div class="radio-group" id="envLocation">
+            <button class="radio-btn" onclick="selectRadio('envLocation',this,'אצל עובד')">👤 אצל עובד</button>
+            <button class="radio-btn" onclick="selectRadio('envLocation',this,'אצל מנהל')">👔 אצל מנהל</button>
+            <button class="radio-btn" onclick="selectRadio('envLocation',this,'כספת')">🔐 כספת</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>מי מחזיק?</label>
+          <input type="text" id="envHolder" placeholder="שם המחזיק" />
+        </div>
+      </div>
+    </div>
+
+    <!-- חלק ה: התאמה -->
+    <div class="section-card" id="section4">
+      <div class="section-title">
+        <div class="section-icon">🔍</div>
+        התאמה לקופה
+      </div>
+      <div class="field">
+        <label>סכום צפוי לפי מערכת (₪)</label>
+        <input type="number" id="expected" placeholder="סכום שמופיע בקופה" step="0.01" oninput="checkMatch()" />
+      </div>
+      <div class="field">
+        <label>הערות / פירוט הפרש</label>
+        <textarea id="notes" rows="3" placeholder="אם יש הפרש — פרט כאן..."></textarea>
+      </div>
+
+      <button class="submit-btn" onclick="submitForm()">
+        📤 שלח דוח סגירת קופה
+      </button>
+    </div>
+
+  </div><!-- end mainForm -->
+</div><!-- end form-container -->
+
+<script>
+  // Set today's date
+  document.getElementById('date').valueAsDate = new Date();
+
+  let envelopeYes = null;
+  const radioValues = {};
+
+  function calcTotal() {
+    const b200 = +document.getElementById('b200').value || 0;
+    const b100 = +document.getElementById('b100').value || 0;
+    const b50  = +document.getElementById('b50').value  || 0;
+    const b20  = +document.getElementById('b20').value  || 0;
+    const c10  = +document.getElementById('c10').value  || 0;
+    const c5   = +document.getElementById('c5').value   || 0;
+    const c2   = +document.getElementById('c2').value   || 0;
+    const c1   = +document.getElementById('c1').value   || 0;
+    const c05  = +document.getElementById('c05').value  || 0;
+    const c01  = +document.getElementById('c01').value  || 0;
+
+    const total = b200*200 + b100*100 + b50*50 + b20*20 +
+                  c10*10 + c5*5 + c2*2 + c1*1 + c05*0.5 + c01*0.1;
+
+    document.getElementById('calcAmount').textContent = '₪' + total.toFixed(2);
+    checkDiff();
+    return total;
+  }
+
+  function checkDiff() {
+    const calc = calcTotal ? parseFloat(document.getElementById('calcAmount').textContent.replace('₪','')) : 0;
+    const worker = parseFloat(document.getElementById('workerTotal').value);
+    const box = document.getElementById('diffStatus');
+    if (isNaN(worker) || document.getElementById('workerTotal').value === '') {
+      box.className = 'status-box status-pending';
+      box.textContent = 'הזן את הסכום שספרת לבדיקה';
+      return;
+    }
+    const diff = Math.abs(calc - worker);
+    if (diff <= 0.15) {
+      box.className = 'status-box status-ok';
+      box.textContent = '✅ תקין — הסכומים תואמים!';
+    } else {
+      box.className = 'status-box status-diff';
+      box.textContent = `⚠️ הפרש של ₪${(calc - worker).toFixed(2)} — בדוק שוב`;
+    }
+  }
+
+  function checkMatch() { /* extra validation hook */ }
+
+  function setEnvelope(yes) {
+    envelopeYes = yes;
+    document.getElementById('envYes').className = 'toggle-btn' + (yes ? ' active-yes' : '');
+    document.getElementById('envNo').className = 'toggle-btn' + (!yes ? ' active-no' : '');
+    document.getElementById('envelopeDetails').className = 'envelope-details' + (yes ? ' show' : '');
+  }
+
+  function selectRadio(groupId, btn, value) {
+    document.querySelectorAll('#' + groupId + ' .radio-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    radioValues[groupId] = value;
+  }
+
+  function updateProgress() {
+    const dots = document.querySelectorAll('.step-dot');
+    const sections = document.querySelectorAll('.section-card');
+    let lastVisible = 0;
+    sections.forEach((s, i) => {
+      if (s.getBoundingClientRect().top < window.innerHeight * 0.6) lastVisible = i;
+    });
+    dots.forEach((d, i) => {
+      if (i < lastVisible) d.className = 'step-dot done';
+      else if (i === lastVisible) d.className = 'step-dot active';
+      else d.className = 'step-dot';
+    });
+  }
+  window.addEventListener('scroll', updateProgress);
+
+  // ← הדבק כאן את ה-URL שקיבלת מ-Google Apps Script
+  const APPS_SCRIPT_URL = "הדבק_כאן_את_ה_URL_שלך";
+
+  async function submitForm() {
+    const date = document.getElementById('date').value;
+    const branch = document.getElementById('branch').value;
+    const worker = document.getElementById('workerName').value;
+    const workerTotal = document.getElementById('workerTotal').value;
+    const calcTotal_val = document.getElementById('calcAmount').textContent;
+
+    if (!date || !branch || !worker) {
+      alert('נא למלא את כל הפרטים הכלליים (תאריך, סניף, שם עובד)');
+      return;
+    }
+    if (!workerTotal) {
+      alert('נא להזין את סה״כ המזומן שספרת');
+      return;
+    }
+    if (envelopeYes === null) {
+      alert('נא לציין האם הופקדה מעטפה היום');
+      return;
+    }
+
+    const diff = parseFloat(calcTotal_val.replace('₪','')) - parseFloat(workerTotal);
+    const diffText = Math.abs(diff) <= 0.15 ? '✅ תקין' : `⚠️ הפרש ₪${diff.toFixed(2)}`;
+
+    // כפתור שליחה — מצב טעינה
+    const btn = document.querySelector('.submit-btn');
+    btn.textContent = '⏳ שולח...';
+    btn.disabled = true;
+
+    // איסוף כל הנתונים
+    const payload = {
+      date, branch,
+      workerName: worker,
+      b200: document.getElementById('b200').value,
+      b100: document.getElementById('b100').value,
+      b50:  document.getElementById('b50').value,
+      b20:  document.getElementById('b20').value,
+      c10:  document.getElementById('c10').value,
+      c5:   document.getElementById('c5').value,
+      c2:   document.getElementById('c2').value,
+      c1:   document.getElementById('c1').value,
+      c05:  document.getElementById('c05').value,
+      c01:  document.getElementById('c01').value,
+      calcTotal: calcTotal_val.replace('₪',''),
+      workerTotal,
+      hasEnvelope: envelopeYes ? 'כן' : 'לא',
+      envAmount: document.getElementById('envAmount').value,
+      envType: radioValues['envType'] || '',
+      envLocation: radioValues['envLocation'] || '',
+      envHolder: document.getElementById('envHolder').value,
+      expected: document.getElementById('expected').value,
+      notes: document.getElementById('notes').value,
+    };
+
+    // שליחה ל-Google Sheets
+    try {
+      if (APPS_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbyqlQsVKiF2IKTfLc-HlURO9AH_0xlLmTENxh5n2HkhIu0c_p0RqyEo1NvPXWbLU90Ckg/exec") {
+        await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
+    } catch(err) {
+      console.log('שגיאה בשליחה:', err);
+    }
+
+    btn.textContent = '📤 שלח דוח סגירת קופה';
+    btn.disabled = false;
+
+    // Build summary
+    const summary = document.getElementById('summaryCard');
+    summary.innerHTML = `
+      <div class="summary-row"><span>📅 תאריך</span><span>${date}</span></div>
+      <div class="summary-row"><span>🏖️ סניף</span><span>${branch}</span></div>
+      <div class="summary-row"><span>👤 עובד</span><span>${worker}</span></div>
+      <div class="summary-row"><span>💵 מזומן (חישוב)</span><span>${calcTotal_val}</span></div>
+      <div class="summary-row"><span>💵 מזומן (נספר)</span><span>₪${workerTotal}</span></div>
+      <div class="summary-row"><span>🔍 סטטוס</span><span>${diffText}</span></div>
+      <div class="summary-row"><span>✉️ מעטפה</span><span>${envelopeYes ? 'כן — ₪' + (document.getElementById('envAmount').value || '0') : 'לא'}</span></div>
+      ${envelopeYes ? `<div class="summary-row"><span>📍 מיקום</span><span>${radioValues['envLocation'] || 'לא צוין'}</span></div>` : ''}
+    `;
+
+    document.getElementById('mainForm').style.display = 'none';
+    document.getElementById('progressBar').style.display = 'none';
+    document.getElementById('successScreen').classList.add('show');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function resetForm() {
+    document.getElementById('mainForm').style.display = 'block';
+    document.getElementById('progressBar').style.display = 'flex';
+    document.getElementById('successScreen').classList.remove('show');
+    document.getElementById('date').valueAsDate = new Date();
+    document.getElementById('branch').value = '';
+    document.getElementById('workerName').value = '';
+    ['b200','b100','b50','b20','c10','c5','c2','c1','c05','c01'].forEach(id => document.getElementById(id).value = 0);
+    document.getElementById('workerTotal').value = '';
+    document.getElementById('calcAmount').textContent = '₪0.00';
+    document.getElementById('diffStatus').className = 'status-box status-pending';
+    document.getElementById('diffStatus').textContent = 'הזן את הסכום שספרת לבדיקה';
+    envelopeYes = null;
+    document.getElementById('envYes').className = 'toggle-btn';
+    document.getElementById('envNo').className = 'toggle-btn';
+    document.getElementById('envelopeDetails').className = 'envelope-details';
+    document.getElementById('envAmount').value = '';
+    document.getElementById('envHolder').value = '';
+    document.getElementById('expected').value = '';
+    document.getElementById('notes').value = '';
+    Object.keys(radioValues).forEach(k => delete radioValues[k]);
+    document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+</script>
+</body>
+</html>
